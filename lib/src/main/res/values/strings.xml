@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">cma-clientsdk-android-auth-google</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+</resources>
