@@ -13,12 +13,13 @@
 package com.ibm.mobileclientaccess.clientsdk.android.auth.google;
 
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
-import com.ibm.bms.clientsdk.android.core.api.BMSClient;
-import com.ibm.bms.clientsdk.android.security.api.AuthenticationContext;
-import com.ibm.bms.clientsdk.android.security.api.AuthenticationListener;
+import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
+import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthenticationContext;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthenticationListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,39 +27,41 @@ import org.json.JSONObject;
 public class MCAGoogleAuthenticationManager implements
         AuthenticationListener
 {
-    private static String TAG = "MCAGoogleAuth";
-    private static String GOOGLE_REALM = "wl_googleRealm";
-    private static final String ACCESS_TOKEN_KEY = "accessToken";
+    private Logger logger;
 
     private MCAGoogleAuthentication googleAuthenticationHandler;
-    private AuthenticationContext authContext;
+
+    private static String GOOGLE_REALM = "wl_googleRealm";
+    private static final String ACCESS_TOKEN_KEY = "accessToken";
 
     //singelton
     private static final Object lock = new Object();
     private static volatile MCAGoogleAuthenticationManager instance;
+    private AuthenticationContext authContext;
+
     public static MCAGoogleAuthenticationManager getInstance() {
-        MCAGoogleAuthenticationManager r = instance;
-        if (r == null) {
+        MCAGoogleAuthenticationManager tempManagerInstance = instance;
+        if (tempManagerInstance == null) {
             synchronized (lock) {    // While we were waiting for the lock, another
-                r = instance;        // thread may have instantiated the object.
-                if (r == null) {
-                    r = new MCAGoogleAuthenticationManager();
-                    instance = r;
+                tempManagerInstance = instance;        // thread may have instantiated the object.
+                if (tempManagerInstance == null) {
+                    tempManagerInstance = new MCAGoogleAuthenticationManager();
+                    instance = tempManagerInstance;
                 }
             }
         }
-        return r;
+        return tempManagerInstance;
     }
 
     private MCAGoogleAuthenticationManager() {
-
+        this.logger = Logger.getInstance(MCAGoogleAuthenticationManager.class.getSimpleName());
     }
 
-    public void registerWithDefaultAuthenticationHandler(Activity ctx) {
+    public void registerWithDefaultAuthenticationHandler(Context ctx) {
         registerWithAuthenticationHandler(ctx, new MCADefaultGoogleAuthenticationHandler(ctx));
     }
 
-    public void registerWithAuthenticationHandler(Activity ctx, MCAGoogleAuthentication handler) {
+    public void registerWithAuthenticationHandler(Context ctx, MCAGoogleAuthentication handler) {
         googleAuthenticationHandler = handler;
 
         //register as authListener
@@ -80,7 +83,7 @@ public class MCAGoogleAuthenticationManager implements
     }
 
     public void onGoogleAuthenticationFailure(JSONObject userInfo) {
-        authContext.submitAuthenticationChallengeFailure(userInfo);
+        authContext.submitAuthenticationFailure(userInfo);
         authContext = null;
     }
 
@@ -89,9 +92,9 @@ public class MCAGoogleAuthenticationManager implements
     }
 
     @Override
-    public void onAuthenticationChallengeReceived(AuthenticationContext authContext, JSONObject challenge) {
-            setAuthenticationContext(authContext);
-            googleAuthenticationHandler.handleAuthentication(null);
+    public void onAuthenticationChallengeReceived(AuthenticationContext authContext, JSONObject challenge, Context context) {
+        setAuthenticationContext(authContext);
+        googleAuthenticationHandler.handleAuthentication(context, null);
     }
 
     @Override

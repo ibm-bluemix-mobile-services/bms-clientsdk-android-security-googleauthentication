@@ -13,22 +13,19 @@
 package com.ibm.mobileclientaccess.clientsdk.android.auth.google;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
-
-import java.io.IOException;
+import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
 
 /**
  * Created by iklein on 8/10/15.
@@ -38,9 +35,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
 {
-    private static final String TAG = "GoogleAuth";
-
-    Activity ctx;
+    private Logger logger;
+    private Context ctx;
 
     /* Request code used to invoke sign in user interactions. */
     public static final int RC_SIGN_IN = 0;
@@ -61,8 +57,9 @@ public class MCADefaultGoogleAuthenticationHandler implements
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
 
-    public MCADefaultGoogleAuthenticationHandler(Activity ctx) {
+    public MCADefaultGoogleAuthenticationHandler(Context ctx) {
         this.ctx = ctx;
+        this.logger = Logger.getInstance(MCADefaultGoogleAuthenticationHandler.class.getSimpleName());
 
         // Build GoogleApiClient with access to basic profile
         mGoogleApiClient = new GoogleApiClient.Builder(ctx)
@@ -75,7 +72,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
     }
 
     @Override
-    public void handleAuthentication(String appId) {
+    public void handleAuthentication(Context context, String appId) {
         mShouldResolve = true;
         mGoogleApiClient.connect();
     }
@@ -108,10 +105,10 @@ public class MCADefaultGoogleAuthenticationHandler implements
         if (!mIntentInProgress && connectionResult.hasResolution()) {
             mIntentInProgress = true;
             try {
-                connectionResult.startResolutionForResult(ctx, RC_SIGN_IN);
+                connectionResult.startResolutionForResult((Activity)ctx, RC_SIGN_IN);
                 mIsResolving = true;
             } catch (IntentSender.SendIntentException e) {
-                Log.e(TAG, "Could not resolve ConnectionResult.", e);
+                logger.error("Error, Could not resolve ConnectionResult." + e.getLocalizedMessage());
                 mIsResolving = false;
                 mGoogleApiClient.connect();
             }
@@ -131,12 +128,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
             String token = null;
             try {
                 token = GoogleAuthUtil.getToken(ctx, accountName, scopes);
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
-            } catch (UserRecoverableAuthException e) {
-//                startActivityForResult(e.getIntent(), RC_SIGN_IN);
-            } catch (GoogleAuthException e) {
-                Log.e(TAG, e.getMessage());
+            } catch (Exception e) {
+                logger.error("Error getting google token: " + e.getLocalizedMessage());
             }
             return token;
         }
@@ -144,7 +137,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
         @Override
         protected void onPostExecute(String token) {
             super.onPostExecute(token);
-            Log.i(TAG, "token = " + token);
+            logger.debug("google token="+ token);
             MCAGoogleAuthenticationManager.getInstance().onGoogleAccessTokenReceived(token);
         }
     }

@@ -12,6 +12,7 @@
 */
 package com.ibm.mobileclientaccess.clientsdk.android.auth.google;
 
+import android.content.Context;
 import android.content.Intent;
 
 /**
@@ -20,17 +21,18 @@ import android.content.Intent;
 public interface MCAGoogleAuthentication {
 
     /**
-     * Signs-in to Google and sends the Google access token back to the authentication handler.
+     * Signs-in to Google as identity provider and sends the access token back to the authentication handler.
      *
-     * @param appId                 The Google app id.
+     * @param appId                 The Facebook app id.
+     * @param  context context to pass for request resources
      */
-    void handleAuthentication(String appId);
+    void handleAuthentication(Context context, String appId);
 
     /**
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * When the Facebook activity ends, it sends a result and that result needs to be transferred to the facebook code,
+     * @param requestCode the intent request code
+     * @param resultCode the result
+     * @param data the data (if any)
      */
     void onActivityResultCalled(int requestCode, int resultCode, Intent data);
 }
