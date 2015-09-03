@@ -72,10 +72,10 @@ public class MCAGoogleAuthenticationManager implements
         googleAuthenticationHandler.onActivityResultCalled(requestCode, resultCode, data);
     }
 
-    public void onGoogleAccessTokenReceived(String facebookAccessToken) {
+    public void onGoogleAccessTokenReceived(String googleAccessToken) {
         JSONObject object = new JSONObject();
         try {
-            object.put(ACCESS_TOKEN_KEY, facebookAccessToken);
+            object.put(ACCESS_TOKEN_KEY, googleAccessToken);
             authContext.submitAuthenticationChallengeAnswer(object);
         } catch (JSONException e) {
             e.printStackTrace();

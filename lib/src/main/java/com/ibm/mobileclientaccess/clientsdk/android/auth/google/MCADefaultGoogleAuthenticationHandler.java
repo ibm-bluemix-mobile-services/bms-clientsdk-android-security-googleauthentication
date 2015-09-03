@@ -36,7 +36,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
         GoogleApiClient.OnConnectionFailedListener
 {
     private Logger logger;
-    private Context ctx;
+    private Activity ctx;
 
     /* Request code used to invoke sign in user interactions. */
     public static final int RC_SIGN_IN = 0;
@@ -58,7 +58,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
     private GoogleApiClient mGoogleApiClient;
 
     public MCADefaultGoogleAuthenticationHandler(Context ctx) {
-        this.ctx = ctx;
+        //TODO: check ctx is activity
+        this.ctx = (Activity)ctx;
         this.logger = Logger.getInstance(MCADefaultGoogleAuthenticationHandler.class.getSimpleName());
 
         // Build GoogleApiClient with access to basic profile
@@ -66,7 +67,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
-//                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addScope(new Scope(Scopes.PROFILE))
                 .build();
     }
@@ -112,8 +113,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 mIsResolving = false;
                 mGoogleApiClient.connect();
             }
-        }
-        else {
+        } else {
             MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(null);
         }
     }
@@ -124,6 +124,9 @@ public class MCADefaultGoogleAuthenticationHandler implements
         protected String doInBackground(String... params) {
             String accountName = params[0];
             String scopes = "oauth2:" + Scopes.PLUS_LOGIN;
+//            String scopes = "oauth2:"
+//                    + Scopes.PLUS_LOGIN + " "
+//                    + Scopes.PLUS_ME + " https://www.googleapis.com/auth/plus.profile.emails.read";
 //            String scopes = "oauth2:profile email";
             String token = null;
             try {
