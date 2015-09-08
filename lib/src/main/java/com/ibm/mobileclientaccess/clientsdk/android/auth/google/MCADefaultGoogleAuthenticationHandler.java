@@ -44,8 +44,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
     /* Request code used to invoke sign in user interactions. */
     public static final int RC_SIGN_IN = 0;
 
-    public static final String CANCEL_ERROR_CODE = "403";
-    public static final String ERROR_ERROR_CODE = "500";
+    public static final String CANCEL_ERROR_CODE = "100";
+    public static final String ERROR_ERROR_CODE = "101";
 
 
 
@@ -91,13 +91,13 @@ public class MCADefaultGoogleAuthenticationHandler implements
             mShouldResolve = true;
             mGoogleApiClient.connect();
         } else {
-            JSONObject obj = new JSONObject();
+            JSONObject obj = null;
             try {
-                obj.put("errorCode", ERROR_ERROR_CODE);
-                obj.put("msg", "The context provided is not ActivityContext, cannot proceed");
+                obj = createFailureResponse(ERROR_ERROR_CODE, "The context provided is not an ActivityContext, cannot proceed" );
             } catch (JSONException e) {
-                throw new RuntimeException();
+                logger.error("error creating JSON message");
             }
+
             MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
         }
     }
@@ -138,12 +138,11 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 mGoogleApiClient.connect();
             }
         } else {
-            JSONObject obj = new JSONObject();
+            JSONObject obj = null;
             try {
-                obj.put("errorCode", ERROR_ERROR_CODE);
-                obj.put("msg", "GoogleAuth - Connection Failed");
+                obj = createFailureResponse(ERROR_ERROR_CODE, "GoogleAuth - Connection Failed" );
             } catch (JSONException e) {
-                throw new RuntimeException();
+                logger.error("error creating JSON message");
             }
             MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
         }
@@ -168,20 +167,26 @@ public class MCADefaultGoogleAuthenticationHandler implements
         @Override
         protected void onPostExecute(String token) {
             if (token == null) {
-                JSONObject obj = new JSONObject();
+                JSONObject obj = null;
                 try {
-                    obj.put("errorCode", ERROR_ERROR_CODE);
-                    obj.put("msg", "GoogleAuth - Token returned null, canont login");
-                    MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+                    obj = createFailureResponse(ERROR_ERROR_CODE, "GoogleAuth - Token returned null, canont login" );
                 } catch (JSONException e) {
-                    throw new RuntimeException();
+                    logger.error("Error getting google token: " + e.getLocalizedMessage());
                 }
 
+                MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
                 return;
             }
 
             logger.debug("google token="+ token);
             MCAGoogleAuthenticationManager.getInstance().onGoogleAccessTokenReceived(token);
         }
+    }
+
+    private JSONObject createFailureResponse(String code, String msg) throws JSONException{
+        JSONObject obj = null;
+        obj.put("errorCode", code);
+        obj.put("msg", msg);
+        return obj;
     }
 }
