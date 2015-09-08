@@ -44,8 +44,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
     /* Request code used to invoke sign in user interactions. */
     public static final int RC_SIGN_IN = 0;
 
-    public static final String CANCEL_ERROR_CODE = "100";
-    public static final String ERROR_ERROR_CODE = "101";
+    public static final String AUTH_CANCEL_CODE = "100";
+    public static final String AUTH_ERROR_CODE = "101";
 
 
 
@@ -93,7 +93,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
         } else {
             JSONObject obj = null;
             try {
-                obj = createFailureResponse(ERROR_ERROR_CODE, "The context provided is not an ActivityContext, cannot proceed" );
+                obj = createFailureResponse(AUTH_ERROR_CODE, "The context provided is not an ActivityContext, cannot proceed" );
             } catch (JSONException e) {
                 logger.error("error creating JSON message");
             }
@@ -140,7 +140,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
         } else {
             JSONObject obj = null;
             try {
-                obj = createFailureResponse(ERROR_ERROR_CODE, "GoogleAuth - Connection Failed" );
+                obj = createFailureResponse(AUTH_ERROR_CODE, "GoogleAuth - Connection Failed" );
             } catch (JSONException e) {
                 logger.error("error creating JSON message");
             }
@@ -169,7 +169,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
             if (token == null) {
                 JSONObject obj = null;
                 try {
-                    obj = createFailureResponse(ERROR_ERROR_CODE, "GoogleAuth - Token returned null, canont login" );
+                    obj = createFailureResponse(AUTH_ERROR_CODE, "GoogleAuth - Token returned null, canont login" );
                 } catch (JSONException e) {
                     logger.error("Error getting google token: " + e.getLocalizedMessage());
                 }
