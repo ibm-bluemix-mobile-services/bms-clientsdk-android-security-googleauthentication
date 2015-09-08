@@ -27,6 +27,9 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by iklein on 8/10/15.
  */
@@ -40,6 +43,11 @@ public class MCADefaultGoogleAuthenticationHandler implements
 
     /* Request code used to invoke sign in user interactions. */
     public static final int RC_SIGN_IN = 0;
+
+    public static final String CANCEL_ERROR_CODE = "403";
+    public static final String ERROR_ERROR_CODE = "500";
+
+
 
     //    PlusClient
 
@@ -67,15 +75,31 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
+//                .addScope(new Scope(Scopes.PROFILE))
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addScope(new Scope(Scopes.PROFILE))
+                .addScope(new Scope("email"))
+                .addScope(new Scope("https://www.googleapis.com/auth/plus.profile.emails.read"))
+                .addScope(new Scope(Scopes.PLUS_ME))
                 .build();
     }
 
     @Override
     public void handleAuthentication(Context context, String appId) {
-        mShouldResolve = true;
-        mGoogleApiClient.connect();
+
+        if (context instanceof Activity) {
+            mShouldResolve = true;
+            mGoogleApiClient.connect();
+        } else {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("errorCode", ERROR_ERROR_CODE);
+                obj.put("msg", "The context provided is not ActivityContext, cannot proceed");
+            } catch (JSONException e) {
+                throw new RuntimeException();
+            }
+            MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+        }
     }
 
     @Override
@@ -114,7 +138,14 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 mGoogleApiClient.connect();
             }
         } else {
-            MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(null);
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("errorCode", ERROR_ERROR_CODE);
+                obj.put("msg", "GoogleAuth - Connection Failed");
+            } catch (JSONException e) {
+                throw new RuntimeException();
+            }
+            MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
         }
     }
 
@@ -123,14 +154,11 @@ public class MCADefaultGoogleAuthenticationHandler implements
         @Override
         protected String doInBackground(String... params) {
             String accountName = params[0];
-            String scopes = "oauth2:" + Scopes.PLUS_LOGIN;
-//            String scopes = "oauth2:"
-//                    + Scopes.PLUS_LOGIN + " "
-//                    + Scopes.PLUS_ME + " https://www.googleapis.com/auth/plus.profile.emails.read";
-//            String scopes = "oauth2:profile email";
+            String scopes = "oauth2:profile email " + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME + " https://www.googleapis.com/auth/plus.profile.emails.read";
             String token = null;
+            Bundle appActivities = new Bundle();
             try {
-                token = GoogleAuthUtil.getToken(ctx, accountName, scopes);
+                token = GoogleAuthUtil.getToken(ctx, accountName, scopes, appActivities);
             } catch (Exception e) {
                 logger.error("Error getting google token: " + e.getLocalizedMessage());
             }
@@ -139,7 +167,19 @@ public class MCADefaultGoogleAuthenticationHandler implements
 
         @Override
         protected void onPostExecute(String token) {
-            super.onPostExecute(token);
+            if (token == null) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("errorCode", ERROR_ERROR_CODE);
+                    obj.put("msg", "GoogleAuth - Token returned null, canont login");
+                    MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+                } catch (JSONException e) {
+                    throw new RuntimeException();
+                }
+
+                return;
+            }
+
             logger.debug("google token="+ token);
             MCAGoogleAuthenticationManager.getInstance().onGoogleAccessTokenReceived(token);
         }

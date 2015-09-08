@@ -78,7 +78,7 @@ public class MCAGoogleAuthenticationManager implements
             object.put(ACCESS_TOKEN_KEY, googleAccessToken);
             authContext.submitAuthenticationChallengeAnswer(object);
         } catch (JSONException e) {
-            e.printStackTrace();
+            logger.error("Error in onGoogleAccessTokenReceived: " + e.getLocalizedMessage());
         }
     }
 
