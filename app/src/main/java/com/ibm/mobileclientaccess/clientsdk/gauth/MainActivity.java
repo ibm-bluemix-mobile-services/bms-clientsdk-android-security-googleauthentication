@@ -17,7 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.ibm.mobileclientaccess.clientsdk.android.auth.google.MCAGoogleAuthenticationManager;
+import com.ibm.mobileclientaccess.clientsdk.android.auth.google.GoogleAuthenticationManager;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
@@ -30,6 +30,11 @@ import java.net.MalformedURLException;
 public class MainActivity extends Activity implements
         ResponseListener
 {
+//    private final String backendRoute = "https://GoogleOauthDemo.stage1.mybluemix.net?subzone=dev";
+    private final String backendRoute = "http://ilans-mbp.haifa.ibm.com:9080";
+//    private final String backendGUID = "107a7b17-2a95-4767-928b-2645b93ca85d";
+    private final String backendGUID = "ilan1234";
+
     private TextView infoTextView;
 
     @Override
@@ -40,19 +45,19 @@ public class MainActivity extends Activity implements
 
         try {
             //Register to the server with backendroute and GUID
-            BMSClient.getInstance().initialize(this, "http://ilans-mbp.haifa.ibm.com:9080","ilan1234");
+            BMSClient.getInstance().initialize(this, backendRoute,backendGUID);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         // Register with default delegate
-        MCAGoogleAuthenticationManager.getInstance().registerWithDefaultAuthenticationHandler(this);
+        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
 
         AuthorizationManager.getInstance().obtainAuthorizationHeader(this, this);
     }
     @Override
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-        MCAGoogleAuthenticationManager.getInstance().onActivityResultCalled(requestCode, responseCode, intent);
+        GoogleAuthenticationManager.getInstance().onActivityResultCalled(requestCode, responseCode, intent);
     }
     //ResponseListener
     @Override

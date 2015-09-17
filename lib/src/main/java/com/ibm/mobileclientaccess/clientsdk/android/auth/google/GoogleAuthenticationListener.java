@@ -18,7 +18,7 @@ import android.content.Intent;
 /**
  * Created by iklein on 8/5/15.
  */
-public interface MCAGoogleAuthentication {
+    public interface GoogleAuthenticationListener {
 
     /**
      * Signs-in to Google as identity provider and sends the access token back to the authentication handler.

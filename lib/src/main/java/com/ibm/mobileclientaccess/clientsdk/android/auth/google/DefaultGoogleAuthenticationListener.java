@@ -33,8 +33,8 @@ import org.json.JSONObject;
 /**
  * Created by iklein on 8/10/15.
  */
-public class MCADefaultGoogleAuthenticationHandler implements
-        MCAGoogleAuthentication,
+public class DefaultGoogleAuthenticationListener implements
+        GoogleAuthenticationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
 {
@@ -46,8 +46,6 @@ public class MCADefaultGoogleAuthenticationHandler implements
 
     public static final String AUTH_CANCEL_CODE = "100";
     public static final String AUTH_ERROR_CODE = "101";
-
-
 
     //    PlusClient
 
@@ -65,13 +63,15 @@ public class MCADefaultGoogleAuthenticationHandler implements
     /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
 
-    public MCADefaultGoogleAuthenticationHandler(Context ctx) {
-        //TODO: check ctx is activity
-        this.ctx = (Activity)ctx;
-        this.logger = Logger.getInstance(MCADefaultGoogleAuthenticationHandler.class.getSimpleName());
+    /**
+     *
+     * @param context - need to pass the ApplicationContext for initializing the googleApiClient since it is not a singelton
+     */
+    public DefaultGoogleAuthenticationListener(Context context) {
+        this.logger = Logger.getInstance(DefaultGoogleAuthenticationListener.class.getSimpleName());
 
         // Build GoogleApiClient with access to basic profile
-        mGoogleApiClient = new GoogleApiClient.Builder(ctx)
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
@@ -86,8 +86,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
 
     @Override
     public void handleAuthentication(Context context, String appId) {
-
         if (context instanceof Activity) {
+            this.ctx = (Activity)context;
             mShouldResolve = true;
             mGoogleApiClient.connect();
         } else {
@@ -98,7 +98,7 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 logger.error("error creating JSON message");
             }
 
-            MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+            GoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
         }
     }
 
@@ -144,7 +144,8 @@ public class MCADefaultGoogleAuthenticationHandler implements
             } catch (JSONException e) {
                 logger.error("error creating JSON message");
             }
-            MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+            GoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+            this.ctx = null;
         }
     }
 
@@ -173,13 +174,14 @@ public class MCADefaultGoogleAuthenticationHandler implements
                 } catch (JSONException e) {
                     logger.error("Error getting google token: " + e.getLocalizedMessage());
                 }
-
-                MCAGoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
-                return;
+                GoogleAuthenticationManager.getInstance().onGoogleAuthenticationFailure(obj);
+                DefaultGoogleAuthenticationListener.this.ctx = null;
             }
-
-            logger.debug("google token="+ token);
-            MCAGoogleAuthenticationManager.getInstance().onGoogleAccessTokenReceived(token);
+            else {
+                logger.debug("google token="+ token);
+                GoogleAuthenticationManager.getInstance().onGoogleAccessTokenReceived(token);
+                DefaultGoogleAuthenticationListener.this.ctx = null;
+            }
         }
     }
 

@@ -24,28 +24,28 @@ import com.ibm.mobilefirstplatform.clientsdk.android.security.api.Authentication
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MCAGoogleAuthenticationManager implements
+public class GoogleAuthenticationManager implements
         AuthenticationListener
 {
     private Logger logger;
 
-    private MCAGoogleAuthentication googleAuthenticationHandler;
+    private GoogleAuthenticationListener googleAuthenticationListener;
 
     private static String GOOGLE_REALM = "wl_googleRealm";
     private static final String ACCESS_TOKEN_KEY = "accessToken";
 
     //singelton
     private static final Object lock = new Object();
-    private static volatile MCAGoogleAuthenticationManager instance;
+    private static volatile GoogleAuthenticationManager instance;
     private AuthenticationContext authContext;
 
-    public static MCAGoogleAuthenticationManager getInstance() {
-        MCAGoogleAuthenticationManager tempManagerInstance = instance;
+    public static GoogleAuthenticationManager getInstance() {
+        GoogleAuthenticationManager tempManagerInstance = instance;
         if (tempManagerInstance == null) {
             synchronized (lock) {    // While we were waiting for the lock, another
                 tempManagerInstance = instance;        // thread may have instantiated the object.
                 if (tempManagerInstance == null) {
-                    tempManagerInstance = new MCAGoogleAuthenticationManager();
+                    tempManagerInstance = new GoogleAuthenticationManager();
                     instance = tempManagerInstance;
                 }
             }
@@ -53,23 +53,23 @@ public class MCAGoogleAuthenticationManager implements
         return tempManagerInstance;
     }
 
-    private MCAGoogleAuthenticationManager() {
-        this.logger = Logger.getInstance(MCAGoogleAuthenticationManager.class.getSimpleName());
+    private GoogleAuthenticationManager() {
+        this.logger = Logger.getInstance(GoogleAuthenticationManager.class.getSimpleName());
     }
 
-    public void registerWithDefaultAuthenticationHandler(Context ctx) {
-        registerWithAuthenticationHandler(ctx, new MCADefaultGoogleAuthenticationHandler(ctx));
+    public void registerDefaultAuthenticationListener(Context ctx) {
+        registerAuthenticationListener(ctx, new DefaultGoogleAuthenticationListener(ctx));
     }
 
-    public void registerWithAuthenticationHandler(Context ctx, MCAGoogleAuthentication handler) {
-        googleAuthenticationHandler = handler;
+    public void registerAuthenticationListener(Context ctx, GoogleAuthenticationListener handler) {
+        googleAuthenticationListener = handler;
 
         //register as authListener
         BMSClient.getInstance().registerAuthenticationListener(GOOGLE_REALM, this);
     }
 
     public void onActivityResultCalled(int requestCode, int resultCode, Intent data) {
-        googleAuthenticationHandler.onActivityResultCalled(requestCode, resultCode, data);
+        googleAuthenticationListener.onActivityResultCalled(requestCode, resultCode, data);
     }
 
     public void onGoogleAccessTokenReceived(String googleAccessToken) {
@@ -94,16 +94,16 @@ public class MCAGoogleAuthenticationManager implements
     @Override
     public void onAuthenticationChallengeReceived(AuthenticationContext authContext, JSONObject challenge, Context context) {
         setAuthenticationContext(authContext);
-        googleAuthenticationHandler.handleAuthentication(context, null);
+        googleAuthenticationListener.handleAuthentication(context, null);
     }
 
     @Override
-    public void onAuthenticationSuccess(JSONObject info) {
+    public void onAuthenticationSuccess(Context ctx, JSONObject info) {
         authContext = null;
     }
 
     @Override
-    public void onAuthenticationFailure(JSONObject info) {
+    public void onAuthenticationFailure(Context ctx, JSONObject info) {
         authContext = null;
     }
 }
