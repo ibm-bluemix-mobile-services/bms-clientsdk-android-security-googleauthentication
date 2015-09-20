@@ -30,10 +30,8 @@ import java.net.MalformedURLException;
 public class MainActivity extends Activity implements
         ResponseListener
 {
-//    private final String backendRoute = "https://GoogleOauthDemo.stage1.mybluemix.net?subzone=dev";
-    private final String backendRoute = "http://ilans-mbp.haifa.ibm.com:9080";
-//    private final String backendGUID = "107a7b17-2a95-4767-928b-2645b93ca85d";
-    private final String backendGUID = "ilan1234";
+    private final String backendRoute = "https://googleoauthdemo.stage1.mybluemix.net/?subzone=dev";
+    private final String backendGUID = "5a5b045f-6ee5-4f7c-82ba-1f45b1a33b5f";
 
     private TextView infoTextView;
 

@@ -15,8 +15,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-    }
-    configurations.all {
-        resolutionStrategy.force 'com.android.support:support-annotations:22.1.0'
+        maven {
+            url 'http://visustar.francelab.fr.ibm.com:8081/nexus/content/repositories/mobile-all'
+            //Internal Nexus
+        }
     }
 }
