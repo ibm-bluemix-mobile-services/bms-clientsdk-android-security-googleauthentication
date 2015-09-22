@@ -42,7 +42,7 @@ public class DefaultGoogleAuthenticationListener implements
     private Activity ctx;
 
     /* Request code used to invoke sign in user interactions. */
-    public static final int RC_SIGN_IN = 0;
+    public static final int DEFAULT_GOOGLE_AUTHENTICATOR_RSOLVER_ID = 1234567890;
 
     public static final String AUTH_CANCEL_CODE = "100";
     public static final String AUTH_ERROR_CODE = "101";
@@ -130,7 +130,7 @@ public class DefaultGoogleAuthenticationListener implements
         if (!mIntentInProgress && connectionResult.hasResolution()) {
             mIntentInProgress = true;
             try {
-                connectionResult.startResolutionForResult((Activity)ctx, RC_SIGN_IN);
+                connectionResult.startResolutionForResult((Activity)ctx, DEFAULT_GOOGLE_AUTHENTICATOR_RSOLVER_ID);
                 mIsResolving = true;
             } catch (IntentSender.SendIntentException e) {
                 logger.error("Error, Could not resolve ConnectionResult." + e.getLocalizedMessage());
