@@ -47,7 +47,7 @@ task generateJavadoc(type: Javadoc) {
 
     options.encoding 'UTF-8'
 
-    setTitle 'Bluemix Mobile Services Core Android API'
+    setTitle 'Bluemix Mobile Google OAuth Android API'
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: generateJavadoc) {
