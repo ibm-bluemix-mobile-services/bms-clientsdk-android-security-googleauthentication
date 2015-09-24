@@ -31,7 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by iklein on 8/10/15.
+ * This class is the default Google OAuth authenticator code
  */
 public class DefaultGoogleAuthenticationListener implements
         GoogleAuthenticationListener,
@@ -44,7 +44,14 @@ public class DefaultGoogleAuthenticationListener implements
     /* Request code used to invoke sign in user interactions. */
     public static final int DEFAULT_GOOGLE_AUTHENTICATOR_RSOLVER_ID = 1234567890;
 
+    /**
+     * Default return code when cancel is pressed during fb authentication (info)
+     */
     public static final String AUTH_CANCEL_CODE = "100";
+
+    /**
+     * Default return code when error occures (info)
+     */
     public static final String AUTH_ERROR_CODE = "101";
 
     //    PlusClient
@@ -64,7 +71,7 @@ public class DefaultGoogleAuthenticationListener implements
     private GoogleApiClient mGoogleApiClient;
 
     /**
-     *
+     * Construct a Google Authentication Listener
      * @param context - need to pass the ApplicationContext for initializing the googleApiClient since it is not a singelton
      */
     public DefaultGoogleAuthenticationListener(Context context) {

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 23
@@ -19,9 +20,7 @@ android {
 }
 
 repositories {
-//    maven {
-//        url 'http://visustar.francelab.fr.ibm.com:8081/nexus/content/repositories/mobile-all' //Internal Nexus
-//    }
+    mavenCentral()
     flatDir{
         dirs 'libs'
     }
@@ -31,7 +30,93 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.google.android.gms:play-services:4.2.+'
-    compile ('com.ibm.mobilefirstplatform.bms.clientsdk.android:bms-clientsdk-android-core:0.1-SNAPSHOT@aar') {
-        transitive = true
+    compile group: 'com.ibm.mobilefirstplatform.clientsdk.android',
+            name: 'core',
+            version: '1.0.0-SNAPSHOT',
+            ext: 'aar',
+            transitive: true
+}
+
+task generateJavadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
+
+    options.links 'http://docs.oracle.com/javase/7/docs/api/'
+
+    options.encoding 'UTF-8'
+
+    setTitle 'Bluemix Mobile Services Core Android API'
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: generateJavadoc) {
+    classifier = 'javadoc'
+    from generateJavadoc.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
+}
+
+def getRepositoryUsername() {
+    return hasProperty('ossrhUsername') ? ossrhUsername : ""
+}
+
+def getRepositoryPassword() {
+    return hasProperty('ossrhPassword') ? ossrhPassword : ""
+}
+
+def getReleaseRepositoryUrl() {
+    return 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+}
+
+def getSnapshotRepositoryUrl() {
+    return 'https://oss.sonatype.org/content/repositories/snapshots/'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: getReleaseRepositoryUrl()) {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
+
+            snapshotRepository(url: getSnapshotRepositoryUrl()) {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+            }
+
+            pom.groupId = 'com.ibm.mobilefirstplatform.clientsdk.android'
+            pom.artifactId = 'googleauthentication'
+            pom.version = '1.0.0-SNAPSHOT'
+
+            pom.project {
+                name 'IBM Bluemix Mobile Services - Client SDK Android Facebook Authentication'
+                description 'This is the Google OAuth component of the Android SDK for IBM Bluemix Mobile Services.'
+                url 'https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-android-security-googleauthentication'
+
+                scm {
+                    connection 'scm:git:git@github.com/ibm-bluemix-mobile-services/bms-clientsdk-android-security-googleauthentication.git'
+                    developerConnection 'scm:git:git@github.com/ibm-bluemix-mobile-services/bms-clientsdk-android-security-googleauthentication.git'
+                    url 'https://github.com/ibm-bluemix-mobile-services/bms-clientsdk-android-security-googleauthentication.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
     }
 }
