@@ -29,10 +29,10 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.google.android.gms:play-services:4.2.+'
+    compile 'com.google.android.gms:play-services:8.1.0'
     compile group: 'com.ibm.mobilefirstplatform.clientsdk.android',
             name: 'core',
-            version: '1.0.0-SNAPSHOT',
+            version: '1.+',
             ext: 'aar',
             transitive: true
 }
@@ -96,7 +96,7 @@ uploadArchives {
 
             pom.groupId = 'com.ibm.mobilefirstplatform.clientsdk.android'
             pom.artifactId = 'googleauthentication'
-            pom.version = '1.0.0-SNAPSHOT'
+            pom.version = '1.0.1-SNAPSHOT'
 
             pom.project {
                 name 'IBM Bluemix Mobile Services - Client SDK Android Google Authentication'
