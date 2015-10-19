@@ -21,7 +21,7 @@ android {
 
 repositories {
     mavenCentral()
-    flatDir{
+    flatDir {
         dirs 'libs'
     }
 }
@@ -33,4 +33,5 @@ dependencies {
             version: '1.+',
             ext: 'aar',
             transitive: true
+    compile 'com.android.support:design:23.0.1'
 }
