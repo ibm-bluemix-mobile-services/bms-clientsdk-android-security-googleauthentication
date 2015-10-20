@@ -17,7 +17,7 @@ import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
  */
 
 /**
- * Just checking if this loooks ok
+ * Just checking if this loooks okZ
  */
 public class MyGoogleListener implements
         GoogleAuthenticationListener,
