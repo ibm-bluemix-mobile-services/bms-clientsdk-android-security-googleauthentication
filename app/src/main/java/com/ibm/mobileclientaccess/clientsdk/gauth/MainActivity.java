@@ -48,8 +48,10 @@ public class MainActivity extends Activity implements
             e.printStackTrace();
         }
 
-        // Register with default delegate
-        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
+//        // Register with default delegate
+//        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
+
+        GoogleAuthenticationManager.getInstance().register(this);
 
         AuthorizationManager.getInstance().obtainAuthorizationHeader(this, this);
     }
