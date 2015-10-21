@@ -94,9 +94,9 @@ public class GoogleAuthenticationManager implements
 
     //////////////////////////////// Public API /////////////////////////////////////////
     /**
-     * Register command for
+     * Supply context for initialization of Googles sdk
      *
-     * @param ctx - needed to init google code, can be application context
+     * @param ctx - needed to init google code - can be application context
      */
     public void register(Context ctx) {
         //register as authListener
@@ -115,11 +115,12 @@ public class GoogleAuthenticationManager implements
                 .addScope(new Scope(Scopes.PLUS_ME))
                 .build();
     }
+
     /**
      * Signs-in to Google as identity provider and sends the access token back to the authentication handler.
      *
-     * @param appId                 The Facebook app id.
-     * @param  context context to pass for request resources
+     * @param appId   The Google app id.
+     * @param context context to pass for request resources
      */
     public void handleAuthentication(Context context, String appId) {
         if (context instanceof Activity) {
