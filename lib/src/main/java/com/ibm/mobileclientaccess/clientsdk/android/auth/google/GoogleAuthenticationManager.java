@@ -107,36 +107,12 @@ public class GoogleAuthenticationManager implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
-//                .addScope(new Scope(Scopes.PROFILE))
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addScope(new Scope(Scopes.PROFILE))
                 .addScope(new Scope("email"))
                 .addScope(new Scope("https://www.googleapis.com/auth/plus.profile.emails.read"))
                 .addScope(new Scope(Scopes.PLUS_ME))
                 .build();
-    }
-
-    /**
-     * Signs-in to Google as identity provider and sends the access token back to the authentication handler.
-     *
-     * @param appId   The Google app id.
-     * @param context context to pass for request resources
-     */
-    public void handleAuthentication(Context context, String appId) {
-        if (context instanceof Activity) {
-            this.ctx = (Activity)context;
-            mShouldResolve = true;
-            mGoogleApiClient.connect();
-        } else {
-            JSONObject obj = null;
-            try {
-                obj = createFailureResponse(AUTH_ERROR_CODE, "The context provided is not an ActivityContext, cannot proceed" );
-            } catch (JSONException e) {
-                logger.error("error creating JSON message");
-            }
-
-            onGoogleAuthenticationFailure(obj);
-        }
     }
 
     /**
@@ -154,7 +130,31 @@ public class GoogleAuthenticationManager implements
         mIsResolving = false;
         mGoogleApiClient.connect();
     }
+
     //////////////////////////////// Public API /////////////////////////////////////////
+
+    /**
+     * Signs-in to Google as identity provider and sends the access token back to the authentication handler.
+     *
+     * @param appId   The Google app id.
+     * @param context context to pass for request resources
+     */
+    private void handleAuthentication(Context context, String appId) {
+        if (context instanceof Activity) {
+            this.ctx = (Activity)context;
+            mShouldResolve = true;
+            mGoogleApiClient.connect();
+        } else {
+            JSONObject obj = null;
+            try {
+                obj = createFailureResponse(AUTH_ERROR_CODE, "The context provided is not an ActivityContext, cannot proceed" );
+            } catch (JSONException e) {
+                logger.error("error creating JSON message");
+            }
+
+            onGoogleAuthenticationFailure(obj);
+        }
+    }
 
     @Override
     public void onConnected(Bundle bundle) {
