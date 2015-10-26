@@ -17,11 +17,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.ibm.mobileclientaccess.clientsdk.android.auth.google.GoogleAuthenticationManager;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthorizationManager;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
 
 import org.json.JSONObject;
 

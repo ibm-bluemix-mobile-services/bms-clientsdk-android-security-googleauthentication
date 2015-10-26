@@ -1,4 +1,4 @@
-package com.ibm.mobileclientaccess.clientsdk.android.auth.google;
+package com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication;
 
 import android.app.Activity;
 import android.content.Context;
