@@ -37,17 +37,17 @@ public class GoogleAuthenticationManager implements
     private Activity ctx;
 
     /* Request code used to invoke sign in user interactions. */
-    private static final int DEFAULT_GOOGLE_AUTHENTICATOR_RESOLVER_ID = 1234567890;
+    private static final int DEFAULT_GOOGLE_AUTHENTICATOR_RESOLVER_ID = 33452256;
 
     /**
      * Default return code when cancel is pressed during fb authentication (info)
      */
-    private static final String AUTH_CANCEL_CODE = "100";
+    public static final String AUTH_CANCEL_CODE = "100";
 
     /**
      * Default return code when error occures (info)
      */
-    private static final String AUTH_ERROR_CODE = "101";
+    public static final String AUTH_ERROR_CODE = "101";
 
     //    PlusClient
 
@@ -122,13 +122,16 @@ public class GoogleAuthenticationManager implements
      * @param data the data (if any)
      */
     public void onActivityResultCalled(int requestCode, int resultCode, Intent data) {
-        // If the error resolution was not successful we should not resolve further.
-        if (resultCode != Activity.RESULT_OK) {
-            mShouldResolve = false;
-        }
+    // check that this is return of the google resolver action
+        if (requestCode == DEFAULT_GOOGLE_AUTHENTICATOR_RESOLVER_ID) {
+            // If the error resolution was not successful we should not resolve further.
+            if (resultCode != Activity.RESULT_OK) {
+                mShouldResolve = false;
+            }
 
-        mIsResolving = false;
-        mGoogleApiClient.connect();
+            mIsResolving = false;
+            mGoogleApiClient.connect();
+        }
     }
 
     //////////////////////////////// Public API /////////////////////////////////////////
@@ -204,7 +207,7 @@ public class GoogleAuthenticationManager implements
      * authentication challenge.
      * @param googleAccessToken the token response
      */
-    public void onGoogleAccessTokenReceived(String googleAccessToken) {
+    private void onGoogleAccessTokenReceived(String googleAccessToken) {
         JSONObject object = new JSONObject();
         try {
             object.put(ACCESS_TOKEN_KEY, googleAccessToken);
@@ -214,7 +217,7 @@ public class GoogleAuthenticationManager implements
         }
     }
 
-    public void onGoogleAuthenticationFailure(JSONObject userInfo) {
+    private void onGoogleAuthenticationFailure(JSONObject userInfo) {
         authContext.submitAuthenticationFailure(userInfo);
         authContext = null;
     }
