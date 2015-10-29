@@ -37,7 +37,7 @@ public class GoogleAuthenticationManager implements
     private Activity ctx;
 
     /* Request code used to invoke sign in user interactions. */
-    private static final int DEFAULT_GOOGLE_AUTHENTICATOR_RESOLVER_ID = 33452256;
+    private static final int DEFAULT_GOOGLE_AUTHENTICATOR_RESOLVER_ID = 1234567890;
 
     /**
      * Default return code when cancel is pressed during fb authentication (info)
