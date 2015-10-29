@@ -17,11 +17,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.ibm.mobileclientaccess.clientsdk.android.auth.google.GoogleAuthenticationManager;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthorizationManager;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
 
 import org.json.JSONObject;
 
@@ -48,8 +48,10 @@ public class MainActivity extends Activity implements
             e.printStackTrace();
         }
 
-        // Register with default delegate
-        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
+//        // Register with default delegate
+//        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
+
+        GoogleAuthenticationManager.getInstance().register(this);
 
         AuthorizationManager.getInstance().obtainAuthorizationHeader(this, this);
     }
