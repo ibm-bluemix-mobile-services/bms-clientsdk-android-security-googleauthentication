@@ -81,6 +81,14 @@ def getSnapshotRepositoryUrl() {
     return 'https://oss.sonatype.org/content/repositories/snapshots/'
 }
 
+def isReleaseBuild() {
+    return !getVersion().contains('-SNAPSHOT')
+}
+
+def getVersion() {
+    return '2.0.0-SNAPSHOT'
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -96,7 +104,7 @@ uploadArchives {
 
             pom.groupId = 'com.ibm.mobilefirstplatform.clientsdk.android'
             pom.artifactId = 'googleauthentication'
-            pom.version = '2.0.0-SNAPSHOT'
+            pom.version = getVersion()
 
             pom.project {
                 name 'IBM Bluemix Mobile Services - Client SDK Android Google Authentication'

@@ -89,7 +89,7 @@ public class GoogleAuthenticationManager implements
     }
 
     private GoogleAuthenticationManager() {
-        this.logger = Logger.getInstance(GoogleAuthenticationManager.class.getSimpleName());
+        this.logger = Logger.getInstance(Logger.INTERNAL_PREFIX + GoogleAuthenticationManager.class.getSimpleName());
     }
 
     //////////////////////////////// Public API /////////////////////////////////////////

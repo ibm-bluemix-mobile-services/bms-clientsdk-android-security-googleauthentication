@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
+import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthorizationManager;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
 
@@ -30,8 +31,8 @@ import java.net.MalformedURLException;
 public class MainActivity extends Activity implements
         ResponseListener
 {
-    private final String backendRoute = "https://ilan1.stage1.mybluemix.net/?subzone=dev";
-    private final String backendGUID = "e8998749-4ad7-414a-b2c9-36983d000f62";
+    private final String backendRoute = "http://ilan4-fb-ng.mybluemix.net";
+    private final String backendGUID = "cda8270a-2606-450d-a740-17f67c3f5502";
 
     private TextView infoTextView;
 
@@ -48,12 +49,9 @@ public class MainActivity extends Activity implements
             e.printStackTrace();
         }
 
-//        // Register with default delegate
-//        GoogleAuthenticationManager.getInstance().registerDefaultAuthenticationListener(getApplicationContext());
-
         GoogleAuthenticationManager.getInstance().register(this);
-
         AuthorizationManager.getInstance().obtainAuthorizationHeader(this, this);
+        Logger.setSDKInternalLoggingEnabled(true);
     }
     @Override
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
