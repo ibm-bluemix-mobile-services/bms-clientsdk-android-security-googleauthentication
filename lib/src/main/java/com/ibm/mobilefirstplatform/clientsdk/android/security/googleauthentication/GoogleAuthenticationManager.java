@@ -14,10 +14,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
+import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthenticationContext;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthenticationListener;
-
+import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthorizationManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -157,6 +158,21 @@ public class GoogleAuthenticationManager implements
 
             onGoogleAuthenticationFailure(obj);
         }
+    }
+
+    /**
+     * Logs out current logged-in user from Google
+     * @param context context to pass for request resources
+     * @param listener Response listener
+     */
+    public void logout(Context context, ResponseListener listener){
+        mIntentInProgress = false;
+        if (mGoogleApiClient.isConnected()) {
+           Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+           Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+           mGoogleApiClient.disconnect();
+        }
+        AuthorizationManager.getInstance().logout(context, listener);
     }
 
     @Override
