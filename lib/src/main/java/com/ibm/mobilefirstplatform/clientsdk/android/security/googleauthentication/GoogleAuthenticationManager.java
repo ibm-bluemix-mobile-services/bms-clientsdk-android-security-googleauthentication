@@ -13,12 +13,12 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
-import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
-import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthenticationContext;
-import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthenticationListener;
-import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthorizationManager;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.mca.api.AuthenticationContext;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.mca.api.AuthenticationListener;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.mca.api.MCAAuthorizationManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -90,7 +90,7 @@ public class GoogleAuthenticationManager implements
     }
 
     private GoogleAuthenticationManager() {
-        this.logger = Logger.getInstance(Logger.INTERNAL_PREFIX + GoogleAuthenticationManager.class.getSimpleName());
+        this.logger = Logger.getLogger(Logger.INTERNAL_PREFIX + GoogleAuthenticationManager.class.getSimpleName());
     }
 
     //////////////////////////////// Public API /////////////////////////////////////////
@@ -101,7 +101,7 @@ public class GoogleAuthenticationManager implements
      */
     public void register(Context ctx) {
         //register as authListener
-        BMSClient.getInstance().registerAuthenticationListener(GOOGLE_REALM, this);
+        MCAAuthorizationManager.getInstance().registerAuthenticationListener(GOOGLE_REALM, this);
 
         // Build GoogleApiClient with access to basic profile
         mGoogleApiClient = new GoogleApiClient.Builder(ctx)
@@ -172,7 +172,8 @@ public class GoogleAuthenticationManager implements
            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
            mGoogleApiClient.disconnect();
         }
-        AuthorizationManager.getInstance().logout(context, listener);
+
+        MCAAuthorizationManager.getInstance().logout(context, listener);
     }
 
     @Override
