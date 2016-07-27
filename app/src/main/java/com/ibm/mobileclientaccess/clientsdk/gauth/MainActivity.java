@@ -42,6 +42,8 @@ public class MainActivity extends Activity implements
         setContentView(R.layout.activity_main);
         infoTextView = (TextView)findViewById(R.id.info);
 
+        MCAAuthorizationManager.createInstance(this);
+
         try {
             //Register to the server with backendroute and GUID
             BMSClient.getInstance().initialize(this, backendRoute,backendGUID,BMSClient.REGION_UK);
