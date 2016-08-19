@@ -21,8 +21,8 @@ import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
-import com.ibm.mobilefirstplatform.clientsdk.android.security.api.AuthorizationManager;
 import com.ibm.mobilefirstplatform.clientsdk.android.security.googleauthentication.GoogleAuthenticationManager;
+import com.ibm.mobilefirstplatform.clientsdk.android.security.mca.api.MCAAuthorizationManager;
 
 import org.json.JSONObject;
 
@@ -31,8 +31,8 @@ import java.net.MalformedURLException;
 public class MainActivity extends Activity implements
         ResponseListener
 {
-    private final String backendRoute = "http://ilan4-fb-ng.mybluemix.net";
-    private final String backendGUID = "cda8270a-2606-450d-a740-17f67c3f5502";
+    private final String backendRoute = "http://ilan-auth-google-master.mybluemix.net";
+    private final String backendGUID = "a9a0fcb7-a459-453f-9c15-9bfde1532589";
 
     private TextView infoTextView;
 
@@ -42,16 +42,18 @@ public class MainActivity extends Activity implements
         setContentView(R.layout.activity_main);
         infoTextView = (TextView)findViewById(R.id.info);
 
+        MCAAuthorizationManager.createInstance(this);
+
         try {
             //Register to the server with backendroute and GUID
-            BMSClient.getInstance().initialize(this, backendRoute,backendGUID);
+            BMSClient.getInstance().initialize(this, backendRoute,backendGUID,BMSClient.REGION_UK);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         GoogleAuthenticationManager.getInstance().register(this);
-        AuthorizationManager.getInstance().obtainAuthorizationHeader(this, this);
-        Logger.setSDKInternalLoggingEnabled(true);
+        MCAAuthorizationManager.getInstance().obtainAuthorization(this,this);
+        Logger.setSDKDebugLoggingEnabled(true);
     }
     @Override
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
