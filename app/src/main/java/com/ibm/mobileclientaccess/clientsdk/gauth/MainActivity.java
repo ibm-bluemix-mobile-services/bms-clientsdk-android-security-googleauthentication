@@ -31,8 +31,8 @@ import java.net.MalformedURLException;
 public class MainActivity extends Activity implements
         ResponseListener
 {
-    private final String backendRoute = "https://GoogleAndroidTest.mybluemix.net";
-    private final String mcaTenantId = "49f8ac9d-5729-4158-aeb8-5ab35ba3e51c";
+    private final String backendRoute = "http://ilan-auth-google-master.mybluemix.net";
+    private final String backendGUID = "a9a0fcb7-a459-453f-9c15-9bfde1532589";
 
     private TextView infoTextView;
 
@@ -41,8 +41,16 @@ public class MainActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         infoTextView = (TextView)findViewById(R.id.info);
-        BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
-        BMSClient.getInstance().setAuthorizationManager(MCAAuthorizationManager.createInstance(this, mcaTenantId));
+
+        MCAAuthorizationManager.createInstance(this);
+
+        try {
+            //Register to the server with backendroute and GUID
+            BMSClient.getInstance().initialize(this, backendRoute,backendGUID,BMSClient.REGION_UK);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
         GoogleAuthenticationManager.getInstance().register(this);
         MCAAuthorizationManager.getInstance().obtainAuthorization(this,this);
         Logger.setSDKDebugLoggingEnabled(true);
